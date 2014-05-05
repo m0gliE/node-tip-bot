@@ -1,0 +1,39 @@
+{
+  "name": "node-tip-bot",
+  "version": "1.0.1",
+  "description": "node.js based tipping bot for cannacoin",
+  "main": "bin/tipbot",
+  "dependencies": {
+    "irc": "~0.3.6",
+    "js-yaml": "~3.0.1",
+    "winston": "~0.7.2",
+    "node-cannacoin": "~0.3.5",
+    "swig": "^1.3.2",
+    "express": "3.4.8"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node bin/tipbot"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/cannacoin-project/node-tip-bot"
+  },
+  "author": "Cannacoin-Project",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cannacoin-Project/node-tip-bot/issues"
+  },
+  "homepage": "https://github.com/cannacoin-project/node-tip-bot",
+  "keywords": [
+    "cannacoin",
+    "bitcoin",
+    "litecoin",
+    "altcoin",
+    "tip",
+    "tipbot",
+    "irc",
+    "bot"
+  ]
+}

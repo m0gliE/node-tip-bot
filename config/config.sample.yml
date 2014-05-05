@@ -1,0 +1,89 @@
+connection: 
+  host: irc.freenode.net
+  port: 6697
+  secure: true
+  status_command: ACC
+  debug: false
+login: 
+  nickname: CannacoinTipbot
+  username: CannacoinTipbot
+  realname: node.js Cannacoin tipping bot
+  nickserv_password: password
+channels: 
+  - '#cannacoin'
+log:
+  file: cannatip.log
+rpc:
+  host: localhost
+  port: 7142
+  user: rpcuser
+  pass: rpcpass
+coin:
+  withdrawal_fee: 0
+  min_withdraw: 5
+  min_confirmations: 3
+  min_tip: 1
+  short_name: C
+  full_name: cannacoin
+webadmin:
+  enabled: true
+  port: 8080
+  users:
+    admin: password
+    secondadmin: password
+commands:
+  help:
+    pm: true
+    channel: false
+  tip:
+    pm: true
+    channel: true    
+  balance:
+    pm: true
+    channel: false
+  withdraw:
+    pm: true
+    channel: false
+  address:
+    pm: true
+    channel: false
+  terms:
+    pm: true
+    channel: false
+  diff:
+    pm: true
+    channel: true
+  networkhps:
+    pm: true
+    channel: true        
+messages:
+  getdiff: 'Current Difficulty: %diff%'
+  networkhps: 'Current Networkhps: %networkhps%'
+  error: 'Sorry %name%, something went wrong.'
+  no_funds: "Sorry %name%, you don't have enough funds (you're %short%%short_name% short)"
+  not_identified: '%name%: You need to be identified with NickServ to tip.'
+  tipped: 'Wow! %from% tipped %to% %amount%%short_name%! "/msg %nick% help" to claim.'
+  balance: '%name% has %balance%%short_name%.'
+  balance_unconfirmed: '%name% has %balance%%short_name% (unconfirmed: %unconfirmed%%short_name%)'
+  deposit_address: Your deposit address %address%
+  withdraw_too_small: 'Sorry %name%, you need to withdraw at least %min_withdraw%%short_name% (you have %balance%%short_name%)'
+  invalid_address: 'Sorry %name%, the address you specified is invalid (%address%).'
+  tip_too_small: 'Sorry %from%, your tip to %to% (%amount%%short_name%) is too small (min. %min_tip%%short_name%).'
+  tip_self: "Sorry %name%, you can't tip yourself!"
+  invalid_amount: 'Sorry %name%, "%amount%" is not a correct amount.'
+  withdraw_success: 
+    - '%name%: %amount%%short_name% has been withdrawn from your account to %address%'
+    - 'You have been charged %withdrawal_fee%%short_name% withdrawal fee.'
+    - 'Transaction %transaction% completed.'
+  help:
+    - 'You can use following commands:'
+    - 'balance - displays your current wallet balance'
+    - 'address - displays %full_name% address where you can send your funds to the tip bot'
+    - 'withdraw <%full_name% address> - withdraws your whole wallet balance to specified address (you will be charged %withdrawal_fee%%short_name% withdrawal fee)'
+    - 'diff - displays the current network difficulty'
+    - 'networkhps - displays the current network hashpersec'    
+    - 'tip <nick> <amount> - sends the specified amount of %full_name% to the specified nickname'
+    - 'terms - displays terms and conditions for using %nick%'
+  terms:
+    - 'There are no fees to use %nick%, with the exception of %withdrawal_fee%%short_name% fee on withdrawals.'
+    - 'In no event shall %nick% be responsible in the event of lost, stolen or misdirected funds.'
