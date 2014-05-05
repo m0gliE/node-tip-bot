@@ -273,11 +273,7 @@ client.addListener('message', function(from, channel, message) {
         client.say(channel, settings.messages.networkhps.expand({networkhps: get_networkhps}));
         });
         break;
-        
-        
-        
-        
-        
+         
       case 'balance':
         var user = from.toLowerCase();
         coin.getBalance(user, settings.coin.min_confirmations, function(err, balance) {
@@ -298,7 +294,7 @@ client.addListener('message', function(from, channel, message) {
 
             var unconfirmed_balance = typeof(unconfirmed_balance) == 'object' ? unconfirmed_balance.result : unconfirmed_balance;
 
-            client.say(channel, settings.messages.balance_unconfirmed.expand({unconfirmed: unconfirmed_balance}));
+            client.say(channel, settings.messages.balance_unconfirmed.expand({balance: balance, name: user, unconfirmed: unconfirmed_balance}));
           })
         });
         break;
