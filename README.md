@@ -87,7 +87,7 @@ To run the bot simply use `node bin/tipbot` or `npm start`.
 | `address`   |                   | displays address where you can send your funds to the tip bot
 | `withdraw`  | `<address>`       | withdraws your whole wallet balance to specified address
 | `tip`       | `<nick> <amount>` | sends the specified amount of coins to the specified nickname
-| `rain`      |                   | displays terms and conditions for using the tip bot
+| `rain`      | `<amount> [max]`  | displays terms and conditions for using the tip bot
 | `networkhps`|                   | displays the current network hashpersec
 | `diff`      |                   | displays the current network difficulty
 | `help`      |                   | displays configured help message (by default similiar to this one)
