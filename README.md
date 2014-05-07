@@ -1,9 +1,9 @@
 node-tip-bot is an open-source node.js IRC bot for tipping with altcoins. It uses [node-cannacoin](https://github.com/cannacoin-project/node-cannacoin) for integration with Litecoin's JSON RPC API.
 
-# Instalation
+# Installation
 To install node-tip-bot simply clone this repo and install dependencies:
 ```bash
-git clone https://github.com/unek/node-tip-bot
+git clone https://github.com/cannacoin-project/node-tip-bot
 cd node-tip-bot
 npm install
 ```
@@ -52,8 +52,9 @@ Basic coin settings.
 * **min_withdraw** - minimum amount of coins to withdraw
 * **min_confirmations** - minimum amount of confirmations needed to tip/withdraw coins
 * **min_tip** - minimum amount of coins to tip
-* **short_name** - short coin's name (eg. `Đ` or `DOGE`)
-* **full_name** - full coin's name (eg. `cannacoin`)
+* **min_rain** - minimum amount of coins to make rain
+* **short_name** - short coin's name (eg. `CCN`)
+* **full_name** - full coin's name (eg. `Cannacoin`)
 
 ## commands
 Here you can restrict some commands to work only on PM/channel.
@@ -84,12 +85,9 @@ To run the bot simply use `node bin/tipbot` or `npm start`.
 | `address`   |                   | displays address where you can send your funds to the tip bot
 | `withdraw`  | `<address>`       | withdraws your whole wallet balance to specified address
 | `tip`       | `<nick> <amount>` | sends the specified amount of coins to the specified nickname
+| `rain`      |                   | displays terms and conditions for using the tip bot
+| `networkhps`|                   | displays the current network hashpersec
+| `diff`      |                   | displays the current network difficulty
 | `help`      |                   | displays configured help message (by default similiar to this one)
 | `terms`     |                   | displays terms and conditions for using the tip bot
 
-## Donations
-Donations are welcome! If you like my bot and want to donate me, here are my wallet addresses:
-
-* **Dogecoin**: DGLT1pTSKAXLSSSz1NGFgZNLioDyHdaDyA
-* **Flappycoin**: FPEBPCC1sr9FAJ4DbD3r4YFwMqrr9TppeK
-* **Mintcoin**: MmfHmeWGUbzzd4he4u9yXRu5tQGLs1QNDL

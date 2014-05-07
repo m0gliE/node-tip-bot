@@ -66,23 +66,21 @@ winston.info('Connecting to the server...');
 var client = new irc.Client(settings.connection.host, settings.login.nickname, {
   port:   settings.connection.port
 , secure: settings.connection.secure
-
 , channels: settings.channels
 , userName: settings.login.username
 , realName: settings.login.realname
-
 , debug: settings.connection.debug
 });
 
 // gets user's login status
-irc.Client.prototype.getLoginStatus = function(nickname, callback) {
+irc.Client.prototype.isIdentified = function(nickname, callback) {
   // request login status
-  this.say('NickServ', settings.connection.status_command + ' ' + nickname);
+ this.say('NickServ', 'ACC ' + nickname);
 
   // wait for response
   var listener = function(from, to, message) {
    // proceed only on NickServ's ACC response
-    var regexp = new RegExp('^(\\S+) ' + settings.connection.status_command + ' (\\d)');
+    var regexp = new RegExp('^(\\S+) ACC (\\d)');
     if(from != undefined && from.toLowerCase() == 'nickserv' && regexp.test(message)) {
       var match = message.match(regexp);
       var user  = match[1];
@@ -90,13 +88,26 @@ irc.Client.prototype.getLoginStatus = function(nickname, callback) {
 
       // if the right response, call the callback and remove this listener
       if(user.toLowerCase() == nickname.toLowerCase()) {
-        callback(Number(level));
+        callback(level == 3);
         this.removeListener('notice', listener);
       }
     }
   }
 
   this.addListener('notice', listener);
+}
+irc.Client.prototype.getNames = function(channel, callback) {
+  client.send('NAMES', channel);
+  var listener = function(nicks) {
+    var names = [];
+    for(name in nicks) {
+      names.push(name);
+    }
+    callback(names);
+    this.removeListener('names' + channel, listener);
+  }
+
+  this.addListener('names' + channel, listener);
 }
 
 // gets a empty coin address
@@ -167,19 +178,84 @@ client.addListener('message', function(from, channel, message) {
   // if not that, message will be undefined for some reason
   // todo: find a fix for that
   var msg = message;
-  client.getLoginStatus(from, function(status) {
+  client.isIdentified(from, function(status) {
     var message = msg;
     // check if the sending user is logged in (identified) with nickserv
-    if(status != 3) {
+    if(!status) {
       winston.info('%s tried to use command `%s`, but is not identified.', from, message);
       client.say(channel, settings.messages.not_identified.expand({name: from}));
       return;
     }
+	switch(command) {
+      case 'rain':
+        var match = message.match(/^.?rain ([\d\.]+) ?(\d+)?/);
+         if(match == null || !match[1]) {
+          client.say(channel, 'Usage: !rain <amount> [max people]');
+          return;
+        }
 
-    switch(command) {
+        var amount = Number(match[1]);
+        var max    = Number(match[2]);
+
+        if(isNaN(amount)) {
+          client.say(channel, settings.messages.invalid_amount.expand({name: from, amount: match[2]}));
+          return;
+        }
+
+        if(isNaN(max) || max < 1) {
+          max = false;
+        }
+        else
+        {
+          max = Math.floor(max);
+        }
+
+        coin.getBalance("irc_"+from.toLowerCase(), settings.coin.min_confirmations, function(err, balance) {
+          if(err) {
+            winston.error('Error in !tip command.', err);
+            client.say(channel, settings.messages.error.expand({name: from}));
+            return;
+          }
+          var balance = typeof(balance) == 'object' ? balance.result : balance;
+
+          if(balance >= amount) {
+            client.getNames(channel, function(names) {
+              // remove tipper from the list
+              names.splice(names.indexOf(from), 1);
+              // shuffle the array
+              for(var j, x, i = names.length; i; j = Math.floor(Math.random() * i), x = names[--i], names[i] = names[j], names[j] = x);
+
+              max = max ? Math.min(max, names.length) : names.length;
+              if(max == 0) return;
+              var whole_channel = false;
+              if(max == names.length) whole_channel = true;
+              names = names.slice(0, max);
+
+              if(amount / max < settings.coin.min_rain) {
+                client.say(channel, settings.messages.rain_too_small.expand({from: from, amount: amount, min_rain: settings.coin.min_rain * max}));
+                return;
+              }
+
+              for (var i = 0; i < names.length; i++) {
+                coin.move("irc_"+from.toLowerCase(), "irc_"+names[i].toLowerCase(), amount / max, function(err, reply) {
+                  if(err || !reply) {
+                    winston.error('Error in !tip command', err);
+                    return;
+                  }
+                });
+              }
+
+              client.say(channel, settings.messages.rain.expand({name: from, amount: amount / max, list: whole_channel ? 'the whole channel' : names.join(', ')}));
+            });
+          } else {
+            winston.info('%s tried to tip %s %d, but has only %d', from, to, amount, balance);
+            client.say(channel, settings.messages.no_funds.expand({name: from, balance: balance, short: amount - balance, amount: amount}));
+          }
+        })
+        break;
       case 'tip':
         var match = message.match(/^.?tip (\S+) ([\d\.]+)/);
-        if(match == null || match < 3) {
+		if(match == null || match.length < 3) {
           client.say(channel, 'Usage: !tip <nickname> <amount>')
           return;
         }
@@ -191,7 +267,7 @@ client.addListener('message', function(from, channel, message) {
           return;
         }
 
-        if(to.toLowerCase() == from.toLowerCase()) {
+        if("irc_"+to.toLowerCase() == "irc_"+from.toLowerCase()) {
           client.say(channel, settings.messages.tip_self.expand({name: from}));
           return;
         }
@@ -201,7 +277,7 @@ client.addListener('message', function(from, channel, message) {
           return;
         }
         // check balance with min. 5 confirmations
-        coin.getBalance(from.toLowerCase(), settings.coin.min_confirmations, function(err, balance) {
+        coin.getBalance("irc_"+from.toLowerCase(), settings.coin.min_confirmations, function(err, balance) {
           if(err) {
             winston.error('Error in !tip command.', err);
             client.say(channel, settings.messages.error.expand({name: from}));
@@ -209,24 +285,16 @@ client.addListener('message', function(from, channel, message) {
           }
           var balance = typeof(balance) == 'object' ? balance.result : balance;
 
-          if(balance >= amount) {
-            client.getAddress(to, function(err, to_address) { // get the address to actually create a new one
-              if(err) {
+         if(balance >= amount) {
+            coin.send('move', "irc_"+from.toLowerCase(), "irc_"+to.toLowerCase(), amount, function(err, reply) {
+              if(err || !reply) {
                 winston.error('Error in !tip command', err);
                 client.say(channel, settings.messages.error.expand({name: from}));
                 return;
               }
-
-              coin.send('move', from.toLowerCase(), to.toLowerCase(), amount, function(err, reply) {
-                if(err || !reply) {
-                  winston.error('Error in !tip command', err);
-                  client.say(channel, settings.messages.error.expand({name: from}));
-                  return;
-                }
-
-                winston.info('%s tipped %s %d%s', from, to, amount, settings.coin.short_name)
-                client.say(channel, settings.messages.tipped.expand({from: from, to: to, amount: amount}));
-              });
+              
+              winston.info('%s tipped %s %d%s', from, to, amount, settings.coin.short_name)
+              client.say(channel, settings.messages.tipped.expand({from: from, to: to, amount: amount}));
             });
           } else {
             winston.info('%s tried to tip %s %d, but has only %d', from, to, amount, balance);
@@ -236,14 +304,14 @@ client.addListener('message', function(from, channel, message) {
         break;
         
       case 'address':
-        var user = from.toLowerCase();
+        var user = "irc_"+from.toLowerCase();
         client.getAddress(user, function(err, address) {
           if(err) {
             winston.error('Error in !address command', err);
             client.say(channel, settings.messages.error.expand({name: from}));
             return;
           }
-
+		  var user = from.toLowerCase();
           client.say(channel, settings.messages.deposit_address.expand({name: user, address: address}));
         });
         break;
@@ -270,16 +338,12 @@ client.addListener('message', function(from, channel, message) {
           }
  		var get_networkhps = typeof(get_networkhps) == 'object' ? get_networkhps.result : get_networkhps;
 
-        client.say(channel, settings.messages.networkhps.expand({networkhps: get_networkhps}));
+        client.say(channel, settings.messages.networkhps.expand({networkhps: get_networkhps/1000000}));
         });
         break;
-        
-        
-        
-        
-        
+         
       case 'balance':
-        var user = from.toLowerCase();
+        var user = "irc_"+from.toLowerCase();
         coin.getBalance(user, settings.coin.min_confirmations, function(err, balance) {
           if(err) {
             winston.error('Error in !balance command', err);
@@ -295,10 +359,10 @@ client.addListener('message', function(from, channel, message) {
               client.say(channel, settings.messages.balance.expand({balance: balance, name: user}));
               return;
             }
-
+			var user = from.toLowerCase();
             var unconfirmed_balance = typeof(unconfirmed_balance) == 'object' ? unconfirmed_balance.result : unconfirmed_balance;
 
-            client.say(channel, settings.messages.balance_unconfirmed.expand({unconfirmed: unconfirmed_balance}));
+            client.say(channel, settings.messages.balance_unconfirmed.expand({balance: balance, name: user, unconfirmed: unconfirmed_balance - balance}));
           })
         });
         break;
@@ -319,7 +383,7 @@ client.addListener('message', function(from, channel, message) {
           }
 
           if(reply.isvalid) {
-            coin.getBalance(from.toLowerCase(), settings.coin.min_confirmations, function(err, balance) {
+            coin.getBalance("irc_"+from.toLowerCase(), settings.coin.min_confirmations, function(err, balance) {
               if(err) {
                 winston.error('Error in !withdraw command', err);
                 client.say(channel, settings.messages.error.expand({name: from}));
@@ -333,7 +397,7 @@ client.addListener('message', function(from, channel, message) {
                 return;
               }
 
-              coin.sendFrom(from.toLowerCase(), address, balance - settings.coin.withdrawal_fee, function(err, reply) {
+              coin.sendFrom("irc_"+from.toLowerCase(), address, balance - settings.coin.withdrawal_fee, function(err, reply) {
                 if(err) {
                   winston.error('Error in !withdraw command', err);
                   client.say(channel, settings.messages.error.expand({name: from}));
@@ -347,7 +411,7 @@ client.addListener('message', function(from, channel, message) {
                 };
 
                 // transfer the rest (usually withdrawal fee - txfee) to bots wallet
-                coin.getBalance(from.toLowerCase(), function(err, balance) {
+                coin.getBalance("irc_"+from.toLowerCase(), function(err, balance) {
                   if(err) {
                     winston.error('Something went wrong while transferring fees', err);
                     return;
@@ -356,7 +420,7 @@ client.addListener('message', function(from, channel, message) {
                   var balance = typeof(balance) == 'object' ? balance.result : balance;
 
                   // moves the rest to bot's wallet
-                  coin.move(from.toLowerCase(), settings.login.nickname.toLowerCase(), balance);
+                  coin.move("irc_"+from.toLowerCase(), "irc_"+settings.login.nickname.toLowerCase(), balance);
                 });
               });
             });
