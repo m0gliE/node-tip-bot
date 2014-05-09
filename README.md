@@ -1,6 +1,6 @@
 ![cannacoin](https://avatars1.githubusercontent.com/u/6781598?s=460)
 
-node-tip-bot is an open-source node.js IRC bot for tipping with altcoins. It uses [node-cannacoin](https://github.com/cannacoin-project/node-cannacoin) for integration with Litecoin's JSON RPC API.
+node-tip-bot is an open-source node.js IRC bot for tipping with altcoins. It uses [node-cannacoin](https://github.com/cannacoin-project/node-cannacoin) for integration with Cannacoin's JSON RPC API.
 
 # Installation
 To install node-tip-bot simply clone this repo and install dependencies:
