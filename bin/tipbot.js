@@ -269,7 +269,7 @@ client.addListener('message', function(from, channel, message) {
         var user = from.toLowerCase();
         bittrex.sendCustomRequest(cryptsy, function(data, err) {
         if(err) {
-          winston.error('Error in !price command.', err);
+          winston.error('Error in !fst command.', err);
           client.say(channel, settings.messages.error.expand({name: from}));
           return;
         }
