@@ -1,7 +1,7 @@
 # Installation
 To install node-tip-bot simply clone this repo and install dependencies:
 ```bash
-git clone https://github.com/cannacoin-project/node-tip-bot
+git clone https://github.com/nrpatten/node-tip-bot
 cd node-tip-bot
 npm install
 ```
