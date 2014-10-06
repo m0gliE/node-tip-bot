@@ -51,8 +51,8 @@ Basic coin settings.
 * **min_confirmations** - minimum amount of confirmations needed to tip/withdraw coins
 * **min_tip** - minimum amount of coins to tip
 * **min_rain** - minimum amount of coins to make rain
-* **short_name** - short coin's name (eg. `DRS`)
-* **full_name** - full coin's name (eg. `Denarius`)
+* **short_name** - short coin's name (eg. `LTC`)
+* **full_name** - full coin's name (eg. `Litecoin`)
 
 ## commands
 Here you can restrict some commands to work only on PM/channel.
@@ -64,7 +64,7 @@ Whatever the bot says. Supports expandable variables (eg. `%nick%` for bot's nic
 Every nickname has it's own account in your wallet. When tipping or withdrawing, bot checks if user is registered and identified with NickServ. If so, he moves the money from one account to another, or when withdrawing, transfers coins to other wallet.
 
 # How to run it?
-Before running the bot, you have to be running your coin daemon with JSON-RPC API enabled. To enable, add this to your coin daemon configuration file (eg. `~/.cannacoin/cannacoin.conf`):
+Before running the bot, you have to be running your coin daemon with JSON-RPC API enabled. To enable, add this to your coin daemon configuration file (eg. `~/.litecoin/litcoin.conf`):
 ```ini
 server=1
 daemon=1
