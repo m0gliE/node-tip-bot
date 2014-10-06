@@ -1,7 +1,3 @@
-![cannacoin](https://avatars1.githubusercontent.com/u/6781598?s=460)
-
-node-tip-bot is an open-source node.js IRC bot for tipping with altcoins. It uses [node-cannacoin](https://github.com/cannacoin-project/node-cannacoin) for integration with Cannacoin's JSON RPC API.
-
 # Installation
 To install node-tip-bot simply clone this repo and install dependencies:
 ```bash
@@ -55,8 +51,8 @@ Basic coin settings.
 * **min_confirmations** - minimum amount of confirmations needed to tip/withdraw coins
 * **min_tip** - minimum amount of coins to tip
 * **min_rain** - minimum amount of coins to make rain
-* **short_name** - short coin's name (eg. `CCN`)
-* **full_name** - full coin's name (eg. `Cannacoin`)
+* **short_name** - short coin's name (eg. `DRS`)
+* **full_name** - full coin's name (eg. `Denarius`)
 
 ## commands
 Here you can restrict some commands to work only on PM/channel.
@@ -79,6 +75,8 @@ rpcallowip=<your bot's ip address or just 127.0.0.1 if hosted on the same machin
 
 To run the bot simply use `node bin/tipbot` or `npm start`.
 
+To change the ticker coin edit `bin/tipbot.js` line `27` and add your coin ticker link, see `268` to `306` for more info.
+
 ## Commands
 
 | **Command** | **Arguments**     | **Description**
@@ -90,6 +88,11 @@ To run the bot simply use `node bin/tipbot` or `npm start`.
 | `rain`      | `<amount> [max]`  | displays terms and conditions for using the tip bot
 | `networkhps`|                   | displays the current network hashpersec
 | `diff`      |                   | displays the current network difficulty
+| `block`     |                   | displays the current network block
+| `info`      |                   | displays the current network khps/difficulty/block
+| `ticker`    |                   | displays the current Allcoin coind price
+| `btc`       |                   | displays the current BTC-e BTC price
+| `fst `      |                   | displays the current Cryptsy FST price
 | `help`      |                   | displays configured help message (by default similiar to this one)
 | `terms`     |                   | displays terms and conditions for using the tip bot
 
