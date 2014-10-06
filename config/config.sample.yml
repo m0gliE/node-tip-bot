@@ -5,65 +5,85 @@ connection:
   status_command: ACC
   debug: false
 login: 
-  nickname: CannacoinTipbot
-  username: CannacoinTipbot
-  realname: node.js Cannacoin tipping bot
-  nickserv_password: password
+  nickname: TipBot
+  username: TipBot
+  realname: node.js rpc tipping bot
+  nickserv_password: yourpass
 channels: 
-  - '#cannacoin'
+  - '#BotChannel'
 log:
-  file: cannatip.log
+  file: bot.log
 rpc:
   host: localhost
-  port: 7142
-  user: rpcuser
-  pass: rpcpass
+  port: rpc-port
+  user: rpc-username
+  pass: rpc-password
 coin:
-  withdrawal_fee: .1 
-  min_withdraw: 1
+  withdrawal_fee: 2 
+  min_withdraw: 10
   min_confirmations: 3
   min_tip: 1
-  short_name: CCN
-  full_name: Cannacoin
+  short_name: coin-shortname
+  full_name: coin-name
 webadmin:
-  enabled: true
+  enabled: false
   port: 8080
   users:
-    admin: password
-    secondadmin: password
+    admin: your-pasword
 commands:
-  help:
+  commands:
     pm: true
     channel: false
+  help:
+    pm: false
+    channel: true
   tip:
-    pm: true
+    pm: false
     channel: true 
+  fst:
+    pm: false
+    channel: true
+  ticker:
+    pm: false
+    channel: true
+  btc:
+    pm: false
+    channel: true
   rain: 
-    pm: true
+    pm: false
     channel: true      
   balance:
-    pm: true
-    channel: false
+    pm: false
+    channel: true
   withdraw:
-    pm: true
-    channel: false
+    pm: false
+    channel: true
   address:
-    pm: true
-    channel: false
+    pm: fales
+    channel: true
   terms:
-    pm: true
-    channel: false
+    pm: false
+    channel: true
+  block:
+    pm: false
+    channel: true
   diff:
-    pm: true
+    pm: false
     channel: true
   networkhps:
-    pm: true
+    pm: false
+    channel: true
+  info:
+    pm: false
     channel: true        
 messages:
+  fst: '%name% The current FST price at Cryptsy. FST/BTC: %price% - Volume: %volume%'
+  ticker: '%name% The current %short_name% price at AllCoin. DRS/BTC: %trade_price% - Volume: BTC: %exchange_volume% - DRS: %type_volume%'
+  btc: '%name% The current BTC price at BTC-e. BTC: $%price_dollar% - Volume: %volume% BTC'
   error: 'Sorry %name%, something went wrong.'
   no_funds: "Sorry %name%, you don't have enough funds (you're %short%%short_name% short)"
   not_identified: '%name%: You need to be identified with NickServ to tip.'
-  tipped: '%from% tipped %to% %amount%%short_name%! "/msg %nick% help" to claim.'
+  tipped: '%from% tipped %to% %amount%%short_name%! "/msg %nick% commands" to claim.'
   balance: '%name% has %balance% %short_name%.'
   balance_unconfirmed: '%name% has %balance% %short_name% (unconfirmed: %unconfirmed% %short_name%)'
   deposit_address: '%name%, your deposit address is %address%'
@@ -74,11 +94,17 @@ messages:
   tip_self: "Sorry %name%, you can't tip yourself!"
   invalid_amount: 'Sorry %name%, "%amount%" is not a correct amount.'
   rain: '%name% rained %amount%%short_name% upon %list%.' 
+  getdiff: 'Current Difficulty: %diff%'
+  networkhps: 'Current Networkhps: %networkhps% Mh/s'
+  getblock: 'Current Block: %block%'
+  info: 'Current Networkhps: %networkhps% Mh/s - Current Difficulty: %diff% - Current Block: %block%'
   withdraw_success: 
     - '%name%: %amount%%short_name% has been withdrawn from your account to %address%'
     - 'You have been charged %withdrawal_fee%%short_name% withdrawal fee.'
     - 'Transaction %transaction% completed.'
   help:
+    - 'Plaese type /msg DRSTipbot commands'
+  commands:
     - 'You can use following commands:'
     - '!balance - displays your current wallet balance'
     - '!address - displays %full_name% address where you can send your funds to the tip bot'
@@ -87,9 +113,12 @@ messages:
     - '!rain <amount> [max] - splits amount coins between max users or the whole channel'
     - '!diff - displays the current network difficulty'
     - '!networkhps - displays the current network hashpersec'    
+    - '!block - displays the current network block'
+    - '!info - displays the current network hashpersec, difficulty, block'
+    - '!ticker - displays the current %short_name% AllCoin Price/Volume'
+    - '!btc - displays the current BTC-e BitCoin Price/Volume'
+    - '!fst - displays the current Cryptsy FastCoin Price/Volume'
     - '!terms - displays terms and conditions for using %nick%'
   terms:
     - 'There are no fees to use %nick%, with the exception of %withdrawal_fee%%short_name% fee on withdrawals.'
     - 'Warning: This service is provided "as is" without warranty of any kind, either express or implied, including, without limitation, the implied warranties of merchantability, fitness for a particular purpose, non-infringement, error-free or uninterrupted service. You are using this service at your own risk; in addition, the coins in your account are only as secure as your IRC account is. Do not hold large sums of coins here; simply withdraw or tip others.'
-  getdiff: 'Current Difficulty: %diff%'
-  networkhps: 'Current Networkhps: %networkhps% Mh/s'
