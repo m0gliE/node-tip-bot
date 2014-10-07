@@ -105,7 +105,7 @@ messages:
     - 'You have been charged %withdrawal_fee%%short_name% withdrawal fee.'
     - 'Transaction %transaction% completed.'
   help:
-    - 'Plaese type /msg DRSTipbot commands'
+    - 'Plaese type /msg %nick% commands'
   commands:
     - 'You can use following commands:'
     - '!balance - displays your current wallet balance'
