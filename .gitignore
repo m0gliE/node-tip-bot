@@ -17,4 +17,4 @@ results
 build
 .grunt
 
-node_modules
+/config/config.yml
