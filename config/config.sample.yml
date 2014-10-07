@@ -46,9 +46,6 @@ commands:
   tip:
     pm: false
     channel: true 
-  fst:
-    pm: false
-    channel: true
   ticker:
     pm: false
     channel: true
