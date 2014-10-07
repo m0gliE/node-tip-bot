@@ -266,6 +266,7 @@ client.addListener('message', function(from, channel, message) {
         })
         break;
       case 'fst':
+<<<<<<< HEAD
         if(settings.cryptsy.enabled) {
           var user = from.toLowerCase();
           bittrex.sendCustomRequest(cryptsy, function(data, err) {
@@ -280,6 +281,14 @@ client.addListener('message', function(from, channel, message) {
           });
           } else {
          return;
+=======
+        var user = from.toLowerCase();
+        bittrex.sendCustomRequest(cryptsy, function(data, err) {
+        if(err) {
+          winston.error('Error in !fst command.', err);
+          client.say(channel, settings.messages.error.expand({name: from}));
+          return;
+>>>>>>> d746c3498cb58c81b43a761fc5a2e7bd4d8d4a20
         }
         break;
       case 'ticker':
