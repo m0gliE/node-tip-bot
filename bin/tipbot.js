@@ -26,7 +26,6 @@ var settings = yaml.load(fs.readFileSync('./config/config.yml', 'utf-8'));
 // Ticker Options/Market URL change URC in config.yml
 var url = (settings.ticker.url);
 var btce = (settings.btc.url);
-var cryptsy = (settings.cryptsy.url);
 
 bittrex.options({
     'stream' : true,
@@ -265,25 +264,8 @@ client.addListener('message', function(from, channel, message) {
           }
         })
         break;
-      case 'fst':
-        if(settings.cryptsy.enabled) {
-          var user = from.toLowerCase();
-          bittrex.sendCustomRequest(cryptsy, function(data, err) {
-           if(err) {
-            winston.error('Error in !price command.', err);
-            client.say(channel, settings.messages.error.expand({name: from}));
-           return;
-          }
-          var info = data;
-          winston.info(user, 'Fetched Price From Cryptsy', info.return.markets.FST.lasttradeprice, info.return.markets.FST.volume);
-          client.say(channel, settings.messages.fst.expand({name: user, price: info.return.markets.FST.lasttradeprice, volume: info.return.markets.FST.volume}));
-          });
-          } else {
-         return;
-        }
-        break;
       case 'ticker':
-        if(settings.ticker.enabled) {
+        if(settings.cryptsy.enabled) {
           var user = from.toLowerCase();
           bittrex.sendCustomRequest(url, function(data, err) {
            if(err) {
@@ -292,8 +274,8 @@ client.addListener('message', function(from, channel, message) {
            return;
           }
           var info = data;
-          winston.info(user, 'Fetched Price From AllCoin', info.data.trade_price, info.data.exchange_volume, info.data.type_volume);
-          client.say(channel, settings.messages.ticker.expand({name: user, trade_price: info.data.trade_price, exchange_volume: info.data.exchange_volume, type_volume: info.data.type_volume}));
+          winston.info(user, 'Fetched Price From Cryptsy', info.return.markets.FST.lasttradeprice, info.return.markets.FST.volume);
+          client.say(channel, settings.messages.ticker.expand({name: user, price: info.return.markets.FST.lasttradeprice, volume: info.return.markets.FST.volume}));
           });
           } else {
          return;
