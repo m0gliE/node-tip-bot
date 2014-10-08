@@ -1,7 +1,7 @@
 # Installation
 To install node-tip-bot simply clone this repo and install dependencies:
 ```bash
-git clone https://github.com/cannacoin-project/node-tip-bot
+git clone https://github.com/nrpatten/node-tip-bot
 cd node-tip-bot
 npm install
 ```
@@ -75,7 +75,7 @@ rpcallowip=<your bot's ip address or just 127.0.0.1 if hosted on the same machin
 
 To run the bot simply use `node bin/tipbot` or `npm start`.
 
-To change the ticker coin edit `bin/tipbot.js` line `27` and add your coin ticker link, see `268` to `306` for more info.
+To change the ticker for your coin edit `config/config.yml` line `33 - 41` and add your coin ticker link, see bin/tipbot.js `268` to `306` for more info.
 
 ## Commands
 

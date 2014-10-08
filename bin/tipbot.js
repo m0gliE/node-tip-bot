@@ -23,10 +23,9 @@ process.on('exit', function() {
 // load settings
 var settings = yaml.load(fs.readFileSync('./config/config.yml', 'utf-8'));
 
-// Ticker Options/Market URL
-var url = ('https://www.allcoin.com/api2/pair/DRS_BTC');
-var btce = ('https://btc-e.com/api/3/ticker/btc_usd');
-var cryptsy = ('http://pubapi.cryptsy.com/api.php?method=singlemarketdata&marketid=44')
+// Ticker Options/Market URL change URC in config.yml
+var url = (settings.ticker.url);
+var btce = (settings.btc.url);
 
 bittrex.options({
     'stream' : true,
@@ -265,44 +264,39 @@ client.addListener('message', function(from, channel, message) {
           }
         })
         break;
-      case 'fst':
-        var user = from.toLowerCase();
-        bittrex.sendCustomRequest(cryptsy, function(data, err) {
-        if(err) {
-          winston.error('Error in !price command.', err);
-          client.say(channel, settings.messages.error.expand({name: from}));
-          return;
-        }
-        var info = data;
-        winston.info(user, 'Fetched Price From Cryptsy', info.return.markets.FST.lasttradeprice, info.return.markets.FST.volume);
-        client.say(channel, settings.messages.fst.expand({name: user, price: info.return.markets.FST.lasttradeprice, volume: info.return.markets.FST.volume}));
-        });
-        break;
       case 'ticker':
-        var user = from.toLowerCase();
-        bittrex.sendCustomRequest(url, function(data, err) {
-        if(err) {
-          winston.error('Error in !ticker command.', err);
-          client.say(channel, settings.messages.error.expand({name: from}));
-          return;
+        if(settings.cryptsy.enabled) {
+          var user = from.toLowerCase();
+          bittrex.sendCustomRequest(url, function(data, err) {
+           if(err) {
+            winston.error('Error in !ticker command.', err);
+            client.say(channel, settings.messages.error.expand({name: from}));
+           return;
+          }
+          var info = data;
+          winston.info(user, 'Fetched Price From Cryptsy', info.return.markets.FST.lasttradeprice, info.return.markets.FST.volume);
+          client.say(channel, settings.messages.ticker.expand({name: user, price: info.return.markets.FST.lasttradeprice, volume: info.return.markets.FST.volume}));
+          });
+          } else {
+         return;
         }
-        var info = data;
-        winston.info(user, 'Fetched Price From AllCoin', info.data.trade_price, info.data.exchange_volume, info.data.type_volume);
-        client.say(channel, settings.messages.ticker.expand({name: user, trade_price: info.data.trade_price, exchange_volume: info.data.exchange_volume, type_volume: info.data.type_volume}));
-        });
         break;
       case 'btc':
-        var user = from.toLowerCase();
-        bittrex.sendCustomRequest(btce, function(data, err) {
-        if(err) {
-          winston.error('Error in !btce command.', err);
-          client.say(channel, settings.messages.error.expand({name: from}));
-          return;
+        if(settings.btc.enabled) {
+          var user = from.toLowerCase();
+          bittrex.sendCustomRequest(btce, function(data, err) {
+           if(err) {
+            winston.error('Error in !btce command.', err);
+            client.say(channel, settings.messages.error.expand({name: from}));
+           return;
+          }
+          var info = data;
+          winston.info(user, 'Fetched Price From btce', info.btc_usd.buy, info.btc_usd.vol_cur);
+          client.say(channel, settings.messages.btc.expand({name: user, price_dollar: info.btc_usd.buy, volume: info.btc_usd.vol_cur}));
+          });
+          } else {
+         return;
         }
-        var info = data;
-        winston.info(user, 'Fetched Price From btce', info.btc_usd.buy, info.btc_usd.vol_cur);
-        client.say(channel, settings.messages.btc.expand({name: user, price_dollar: info.btc_usd.buy, volume: info.btc_usd.vol_cur}));
-        });
         break;
       case 'tip':
         var match = message.match(/^.?tip (\S+) ([\d\.]+)/);
